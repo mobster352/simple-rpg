@@ -1,7 +1,16 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#define PLAYER_SPEED 100
+#define ANIMATION_SPEED 0.1f // 60 fps / need 10 fps for animation
 
+enum ANIMATION {
+    IDLE_ANIMATION,
+    RUN_ANIMATION,
+    ATTACK1_ANIMATION,
+    ATTACK2_ANIMATION,
+    GUARD_ANIMATION
+};
 
 
 #endif

@@ -1,11 +1,16 @@
-#include "sprite.h"
+#include "stdio.h"
 
-Animation createAnimation(int id, Texture texture, int steps, int size){
+#include "sprite.h"
+#include "constants.h"
+
+Animation createAnimation(int id, Texture texture, int steps, int size, float divisor, bool loop){
     Animation a;
     a.id = id;
     a.texture = texture;
     a.steps = steps;
     a.size = size;
+    a.divisor = divisor;
+    a.loop = loop;
     return a;
 }
 
@@ -17,6 +22,7 @@ Sprite createSprite(Animation animation, Rectangle source, Rectangle dest, Vecto
     s.origin = origin;
     s.rotation = rotation;
     s.tint = tint;
+    s.flipH = false;
     return s;
 }
 
@@ -28,29 +34,24 @@ int getFrame(int index, int spriteSize){
     return index * spriteSize;
 }
 
-void PlayAnimation(Sprite sprite, int* animation, int* index, bool* isOnceAnimationPlaying, float* animationTimer, float animationSpeed, bool loop){
+void PlayAnimation(Sprite sprite, int* animation, int* index, float* animationTimer){
     // Update the animation timer
     *animationTimer += GetFrameTime();
 
     // Check if it's time to advance to the next frame
-    if (*animationTimer >= animationSpeed) {
+    if (*animationTimer >= ANIMATION_SPEED) {
             *index = (*index + 1) % sprite.animation.steps;
             *animationTimer = 0.0f;
     }
 
     sprite.source.x = getFrame(*index, sprite.animation.size);
     DrawTexturePro(sprite.animation.texture, sprite.source, sprite.dest, sprite.origin, sprite.rotation, sprite.tint);
+
     if(*index > sprite.animation.steps)
-        if(loop)        
+        if(sprite.animation.loop)        
             *index = 0;
         else {
             *index = 0;
             *animation = 0;
-            *isOnceAnimationPlaying = false;
         }
-}
-
-void changeAnimation(int* index, int* animation, int newAnimation){
-    *index = 0;
-    *animation = newAnimation;
 }

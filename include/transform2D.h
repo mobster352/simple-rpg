@@ -5,6 +5,8 @@
 
 typedef struct transform2D {
     Vector2 position;
+    float width;
+    float height;
 } Transform2D;
 
 #endif

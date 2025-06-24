@@ -8,6 +8,8 @@ typedef struct animation {
     Texture texture;
     int steps;
     int size;
+    float divisor;
+    bool loop;
 } Animation;
 
 typedef struct sprite {
@@ -17,12 +19,12 @@ typedef struct sprite {
     Vector2 origin;
     float rotation;
     Color tint;
+    bool flipH;
 } Sprite;
 
-Animation createAnimation(int id, Texture texture, int steps, int size);
+Animation createAnimation(int id, Texture texture, int steps, int size, float divisor, bool loop);
 Sprite createSprite(Animation animation, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint);
 void updateAnimation(Sprite* s, Animation animation);
-void PlayAnimation(Sprite sprite, int* animation, int* index, bool* isOnceAnimationPlaying, float* animationTimer, float animationSpeed, bool loop);
-void changeAnimation(int* index, int* animation, int newAnimation);
+void PlayAnimation(Sprite sprite, int* animation, int* index, float* animationTimer);
 
 #endif

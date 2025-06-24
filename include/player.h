@@ -9,8 +9,10 @@ typedef struct player {
     Sprite sprite;
 } Player;
 
-Player createPlayer(int xPos, int yPos);
+Player createPlayer(int xPos, int yPos, float width, float height);
 void changeSprite(Player* p, Sprite s);
-void drawPlayerHitbox(Player p);
+Rectangle drawPlayerHitbox(Player p, bool* debug);
+void changeAnimation(Player* p, Animation a);
+void updatePlayer(Player* p, Animation* animations);
 
 #endif
