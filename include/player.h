@@ -3,6 +3,7 @@
 
 #include "transform2D.h"
 #include "sprite.h"
+#include "enemy.h"
 
 typedef struct player {
     Transform2D transform2D;
@@ -16,6 +17,6 @@ Player createPlayer(int xPos, int yPos, float width, float height);
 void changeSprite(Player* p, Sprite s);
 void drawPlayerHitbox(Player p, bool* debug);
 void changeAnimation(Player* p, Animation a, int* index);
-void updatePlayer(Player* p, Animation* animations, int* index);
+void updatePlayer(Player* p, Animation* animations, int* index, Enemy* enemies, int enemiesLength);
 
 #endif

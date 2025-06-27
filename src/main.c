@@ -7,6 +7,7 @@
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 #include "player.h"
+#include "enemy.h"
 #include "sprite.h"
 #include "constants.h"
 
@@ -14,25 +15,32 @@ void* concatVector2ToString(const char *string, Vector2 value){
 	char buffer[32];
 	// Format the vector as (x, y)
     snprintf(buffer, sizeof(buffer), "(%d, %d)", (int)value.x, (int)value.y);
-    // Calculate required size for new string
-        //Calculate required size for new string
-        size_t new_string_len = strlen(string) + strlen(buffer) + 1; //+1 for null terminator
-        //Allocate memory for new string
-        char *result = (char *)malloc(new_string_len);
-        if(result == NULL){
-                perror("Failed to allocate memory");
-                return NULL;
-        }
-        //Copy the first string
-        strcpy(result, string);
-        strcat(result, buffer);
-        return result;
+	//Calculate required size for new string
+	size_t new_string_len = strlen(string) + strlen(buffer) + 1; //+1 for null terminator
+	//Allocate memory for new string
+	char *result = (char *)malloc(new_string_len);
+	if(result == NULL){
+			perror("Failed to allocate memory");
+			return NULL;
+	}
+	//Copy the first string
+	strcpy(result, string);
+	strcat(result, buffer);
+	return result;
 }
 
 void drawTextWithVector2(char *text, Vector2 value, int posX, int posY, int fontSize, Color color){
 	void *newText = concatVector2ToString(text, value);
 	DrawText(newText,posX,posY,fontSize,color);
 	free(newText);
+}
+
+void cleanupEnemies(Enemy* enemies, int enemiesLength){
+	for(int i=0; i<enemiesLength; i++){
+        if(enemies[i].hp <= 0){
+            //remove enemy from list
+        }
+    }
 }
 
 int main ()
@@ -60,6 +68,12 @@ int main ()
 		playerAttack1Animation
 	};
 
+	Animation enemyAnimations[5] = {
+		playerIdleAnimation,
+		playerRunAnimation,
+		playerAttack1Animation
+	};
+
 	SetTargetFPS(60);
 	
 	Player player = createPlayer(100,100,192,192);
@@ -77,7 +91,26 @@ int main ()
 		WHITE
 	);
 	changeSprite(&player, playerSprite);
-	// changeAnimation(&player, playerRunAnimation);
+	
+	Enemy e = createEnemy(400, 400, 192, 192);
+	Sprite enemySprite = createSprite(
+		playerIdleAnimation,
+		(Rectangle){0,0,192,192},
+		(Rectangle){
+			e.transform2D.position.x, 
+			e.transform2D.position.y, 
+			playerIdleAnimation.size/playerIdleAnimation.divisor, 
+			playerIdleAnimation.size/playerIdleAnimation.divisor, 
+		},
+		Vector2Zero(),
+		0.0f,
+		WHITE
+	);
+	changeEnemySprite(&e, playerSprite);
+
+	Enemy* enemies[1] = {
+		&e
+	};
 
 	Camera2D playerCamera;
 	playerCamera.target = player.transform2D.position;
@@ -98,22 +131,27 @@ int main ()
 		float cameraY = (player.transform2D.position.y-GetScreenHeight()/2) + player.transform2D.height/2;
 		playerCamera.target = (Vector2){cameraX, cameraY};  
 
-		updatePlayer(&player, playerAnimations, &index);
+		cleanupEnemies(*enemies, 1);
+		updateEnemy(&e);
+		updatePlayer(&player, playerAnimations, &index, *enemies, 1);
 		
 		// drawing
 		BeginDrawing();
-		BeginMode2D(playerCamera);
+		// BeginMode2D(playerCamera);
 		// Setup the back buffer for drawing (clear color and depth buffers)
 		ClearBackground(BLACK);
 		DrawTexturePro(background,(Rectangle){0,0, GetScreenWidth(), GetScreenHeight()},(Rectangle){0,0, GetScreenWidth(), GetScreenHeight()},Vector2Zero(),0.0f,WHITE);
 		DrawTexture(map,0,0,WHITE);
-		drawTextWithVector2("Pos: ", GetMousePosition(), playerCamera.target.x + GetScreenWidth() - 170, playerCamera.target.y + GetScreenHeight() - 20, 20, WHITE);
+		// drawTextWithVector2("Pos: ", GetMousePosition(), playerCamera.target.x + GetScreenWidth() - 170, playerCamera.target.y + GetScreenHeight() - 20, 20, WHITE); //this is for follow camera logic
+		drawTextWithVector2("Pos: ", GetMousePosition(), GetScreenWidth() - 170, GetScreenHeight() - 20, 20, WHITE);
 		
+		drawEnemy(e, debug);
+
 		PlayAnimation(&player.sprite, playerAnimations, &index, &animationTimer);
 		drawPlayerHitbox(player, &debug);
 		
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
-		EndMode2D();
+		// EndMode2D();
 		EndDrawing();
 	}
 
