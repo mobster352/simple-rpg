@@ -48,13 +48,16 @@ int main ()
 	Texture map = LoadTexture("map.png");
 	Texture playerIdleTexture = LoadTexture("Warrior_Idle.png");
 	Texture playerRunTexture = LoadTexture("Warrior_Run.png");
+	Texture playerAttack1Texture = LoadTexture("Warrior_Attack1.png");
 
 	Animation playerIdleAnimation = createAnimation(IDLE_ANIMATION, playerIdleTexture, 8, 192, 1.2f, true);
 	Animation playerRunAnimation = createAnimation(RUN_ANIMATION, playerRunTexture, 6, 192, 1.2f, true);
+	Animation playerAttack1Animation = createAnimation(ATTACK1_ANIMATION, playerAttack1Texture, 4, 192, 1.2f, false);
 
 	Animation playerAnimations[5] = {
 		playerIdleAnimation,
-		playerRunAnimation
+		playerRunAnimation,
+		playerAttack1Animation
 	};
 
 	SetTargetFPS(60);
@@ -82,7 +85,6 @@ int main ()
 	playerCamera.rotation = 0.0f;
 	playerCamera.offset = Vector2Zero();
 
-	int animation = 0;
 	int index = 0;
 	float animationTimer = 0.0f;
 	float animationSpeed = 0.1f;
@@ -96,7 +98,7 @@ int main ()
 		float cameraY = (player.transform2D.position.y-GetScreenHeight()/2) + player.transform2D.height/2;
 		playerCamera.target = (Vector2){cameraX, cameraY};  
 
-		updatePlayer(&player, playerAnimations);
+		updatePlayer(&player, playerAnimations, &index);
 		
 		// drawing
 		BeginDrawing();
@@ -107,7 +109,7 @@ int main ()
 		DrawTexture(map,0,0,WHITE);
 		drawTextWithVector2("Pos: ", GetMousePosition(), playerCamera.target.x + GetScreenWidth() - 170, playerCamera.target.y + GetScreenHeight() - 20, 20, WHITE);
 		
-		PlayAnimation(player.sprite, &animation, &index, &animationTimer);
+		PlayAnimation(&player.sprite, playerAnimations, &index, &animationTimer);
 		Rectangle hitbox = drawPlayerHitbox(player, &debug);
 		
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
@@ -121,6 +123,7 @@ int main ()
 	UnloadTexture(map);
 	UnloadTexture(playerIdleTexture);
 	UnloadTexture(playerRunTexture);
+	UnloadTexture(playerAttack1Texture);
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();

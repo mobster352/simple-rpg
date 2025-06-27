@@ -34,24 +34,27 @@ int getFrame(int index, int spriteSize){
     return index * spriteSize;
 }
 
-void PlayAnimation(Sprite sprite, int* animation, int* index, float* animationTimer){
+void PlayAnimation(Sprite* sprite, Animation* animations, int* index, float* animationTimer){
     // Update the animation timer
     *animationTimer += GetFrameTime();
 
     // Check if it's time to advance to the next frame
-    if (*animationTimer >= ANIMATION_SPEED) {
-            *index = (*index + 1) % sprite.animation.steps;
+    if (*animationTimer >= ANIMATION_SPEED){
+            //*index = (*index + 1) % sprite->animation.steps;
+            *index += 1;
             *animationTimer = 0.0f;
     }
 
-    sprite.source.x = getFrame(*index, sprite.animation.size);
-    DrawTexturePro(sprite.animation.texture, sprite.source, sprite.dest, sprite.origin, sprite.rotation, sprite.tint);
+    sprite->source.x = getFrame(*index, sprite->animation.size);
+    DrawTexturePro(sprite->animation.texture, sprite->source, sprite->dest, sprite->origin, sprite->rotation, sprite->tint);
 
-    if(*index > sprite.animation.steps)
-        if(sprite.animation.loop)        
+    //if(*index==0){
+    if(*index == sprite->animation.steps){
+        if(sprite->animation.loop)        
             *index = 0;
         else {
             *index = 0;
-            *animation = 0;
+            updateAnimation(sprite, animations[IDLE_ANIMATION]);
         }
+    }        
 }

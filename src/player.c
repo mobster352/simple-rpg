@@ -10,6 +10,7 @@ Player createPlayer(int xPos, int yPos, float width, float height){
     p.transform2D.position.y = yPos;
     p.transform2D.width = width;
     p.transform2D.height = height;
+    p.attackTimer = 0.0f;
     return p;
 }
 
@@ -31,8 +32,9 @@ Rectangle drawPlayerHitbox(Player p, bool* debug){
     return hitbox;
 }
 
-void changeAnimation(Player* p, Animation a){
+void changeAnimation(Player* p, Animation a, int* index){
     p->sprite.animation = a;
+    *index = 0;
 }
 
 void movePlayer(Player* p, Animation* animations, Vector2 unitVector, int numKeysHeldDown){
@@ -52,13 +54,23 @@ void updateNumKeysHeldDown(int* numKeysHeldDown){
         *numKeysHeldDown += 1;
 }
 
-void updatePlayer(Player* p, Animation* animations){
+void updatePlayer(Player* p, Animation* animations, int* index){
+    if(p->attackTimer > 0.0f)
+        p->attackTimer -= GetFrameTime();
+    if(IsKeyPressed(KEY_SPACE) && p->attackTimer <= 0.0f){
+        p->attackTimer = ATTACK_DELAY;
+        changeAnimation(p, animations[ATTACK1_ANIMATION], index);
+        return;
+    }
+    if(p->attackTimer > 0.0f)
+        return;
+
     int numKeysHeldDown = 0;
     if(IsKeyDown(KEY_D)){
         updateNumKeysHeldDown(&numKeysHeldDown);
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_A)){
             if(p->sprite.animation.id != RUN_ANIMATION){
-                changeAnimation(p, animations[RUN_ANIMATION]);
+                changeAnimation(p, animations[RUN_ANIMATION], index);
             }
             if(p->sprite.flipH){
                 p->sprite.source.width = -p->sprite.source.width;
@@ -71,7 +83,7 @@ void updatePlayer(Player* p, Animation* animations){
         updateNumKeysHeldDown(&numKeysHeldDown);
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_D)){
             if(p->sprite.animation.id != RUN_ANIMATION){
-                changeAnimation(p, animations[RUN_ANIMATION]);
+                changeAnimation(p, animations[RUN_ANIMATION], index);
             }
             if(!p->sprite.flipH){
                 p->sprite.source.width = -p->sprite.source.width;
@@ -84,7 +96,7 @@ void updatePlayer(Player* p, Animation* animations){
         updateNumKeysHeldDown(&numKeysHeldDown);
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_S)){
             if(p->sprite.animation.id != RUN_ANIMATION){
-                changeAnimation(p, animations[RUN_ANIMATION]);
+                changeAnimation(p, animations[RUN_ANIMATION], index);
             }
             movePlayer(p, animations, (Vector2){0,-1}, numKeysHeldDown);
         }
@@ -93,13 +105,13 @@ void updatePlayer(Player* p, Animation* animations){
         updateNumKeysHeldDown(&numKeysHeldDown);
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_W)){
             if(p->sprite.animation.id != RUN_ANIMATION){
-                changeAnimation(p, animations[RUN_ANIMATION]);
+                changeAnimation(p, animations[RUN_ANIMATION], index);
             }
             movePlayer(p, animations, (Vector2){0,1}, numKeysHeldDown);
         }
     }
 
     if(IsKeyReleased(KEY_D) || IsKeyReleased(KEY_A) || IsKeyReleased(KEY_W) || IsKeyReleased(KEY_S)){
-        changeAnimation(p, animations[IDLE_ANIMATION]);
+        changeAnimation(p, animations[IDLE_ANIMATION], index);
     }
 }
