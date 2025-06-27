@@ -40,7 +40,6 @@ void PlayAnimation(Sprite* sprite, Animation* animations, int* index, float* ani
 
     // Check if it's time to advance to the next frame
     if (*animationTimer >= ANIMATION_SPEED){
-            //*index = (*index + 1) % sprite->animation.steps;
             *index += 1;
             *animationTimer = 0.0f;
     }
@@ -48,7 +47,6 @@ void PlayAnimation(Sprite* sprite, Animation* animations, int* index, float* ani
     sprite->source.x = getFrame(*index, sprite->animation.size);
     DrawTexturePro(sprite->animation.texture, sprite->source, sprite->dest, sprite->origin, sprite->rotation, sprite->tint);
 
-    //if(*index==0){
     if(*index == sprite->animation.steps){
         if(sprite->animation.loop)        
             *index = 0;

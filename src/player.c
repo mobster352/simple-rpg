@@ -38,7 +38,14 @@ void changeAnimation(Player* p, Animation a, int* index){
 }
 
 void movePlayer(Player* p, Animation* animations, Vector2 unitVector, int numKeysHeldDown){
-    p->transform2D.position = Vector2Add(p->transform2D.position, Vector2Scale(unitVector, PLAYER_SPEED/numKeysHeldDown * GetFrameTime()));
+    int speed;
+    if(numKeysHeldDown >= 2){
+        speed = PLAYER_SPEED - PLAYER_SPEED/4;
+    }
+    else{
+        speed = PLAYER_SPEED;
+    }
+    p->transform2D.position = Vector2Add(p->transform2D.position, Vector2Scale(unitVector, speed * GetFrameTime()));
     p->sprite.dest = (Rectangle){
         p->transform2D.position.x, 
         p->transform2D.position.y, 
@@ -48,10 +55,7 @@ void movePlayer(Player* p, Animation* animations, Vector2 unitVector, int numKey
 }
 
 void updateNumKeysHeldDown(int* numKeysHeldDown){
-    if(*numKeysHeldDown >= 2)
-        *numKeysHeldDown = 2;
-    else
-        *numKeysHeldDown += 1;
+    *numKeysHeldDown += 1;
 }
 
 void updatePlayer(Player* p, Animation* animations, int* index){
@@ -66,8 +70,16 @@ void updatePlayer(Player* p, Animation* animations, int* index){
         return;
 
     int numKeysHeldDown = 0;
-    if(IsKeyDown(KEY_D)){
+    if(IsKeyDown(KEY_D))
         updateNumKeysHeldDown(&numKeysHeldDown);
+    if(IsKeyDown(KEY_A))
+        updateNumKeysHeldDown(&numKeysHeldDown);
+    if(IsKeyDown(KEY_W))
+        updateNumKeysHeldDown(&numKeysHeldDown);
+    if(IsKeyDown(KEY_S))
+        updateNumKeysHeldDown(&numKeysHeldDown);
+    
+    if(IsKeyDown(KEY_D)){
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_A)){
             if(p->sprite.animation.id != RUN_ANIMATION){
                 changeAnimation(p, animations[RUN_ANIMATION], index);
@@ -78,9 +90,11 @@ void updatePlayer(Player* p, Animation* animations, int* index){
             }
             movePlayer(p, animations, (Vector2){1,0}, numKeysHeldDown);
         }
+        else
+            if(p->sprite.animation.id != IDLE_ANIMATION)
+                changeAnimation(p, animations[IDLE_ANIMATION], index);
     }
     if(IsKeyDown(KEY_A)){
-        updateNumKeysHeldDown(&numKeysHeldDown);
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_D)){
             if(p->sprite.animation.id != RUN_ANIMATION){
                 changeAnimation(p, animations[RUN_ANIMATION], index);
@@ -91,27 +105,34 @@ void updatePlayer(Player* p, Animation* animations, int* index){
             }
             movePlayer(p, animations, (Vector2){-1,0}, numKeysHeldDown);
         }
+        else
+            if(p->sprite.animation.id != IDLE_ANIMATION)
+                changeAnimation(p, animations[IDLE_ANIMATION], index);
     }
     if(IsKeyDown(KEY_W)){
-        updateNumKeysHeldDown(&numKeysHeldDown);
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_S)){
             if(p->sprite.animation.id != RUN_ANIMATION){
                 changeAnimation(p, animations[RUN_ANIMATION], index);
             }
             movePlayer(p, animations, (Vector2){0,-1}, numKeysHeldDown);
         }
+        else
+            if(p->sprite.animation.id != IDLE_ANIMATION)
+                changeAnimation(p, animations[IDLE_ANIMATION], index);
     }
     if(IsKeyDown(KEY_S)){
-        updateNumKeysHeldDown(&numKeysHeldDown);
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_W)){
             if(p->sprite.animation.id != RUN_ANIMATION){
                 changeAnimation(p, animations[RUN_ANIMATION], index);
             }
             movePlayer(p, animations, (Vector2){0,1}, numKeysHeldDown);
         }
+        else
+            if(p->sprite.animation.id != IDLE_ANIMATION)
+                changeAnimation(p, animations[IDLE_ANIMATION], index);
     }
 
-    if(IsKeyReleased(KEY_D) || IsKeyReleased(KEY_A) || IsKeyReleased(KEY_W) || IsKeyReleased(KEY_S)){
+    if((IsKeyReleased(KEY_D) || IsKeyReleased(KEY_A) || IsKeyReleased(KEY_W) || IsKeyReleased(KEY_S)) && p->sprite.animation.id != IDLE_ANIMATION){
         changeAnimation(p, animations[IDLE_ANIMATION], index);
     }
 }
