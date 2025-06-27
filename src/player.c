@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "stdio.h"
 #include "enemy.h"
+#include "dynamic_array.h"
 
 Player createPlayer(int xPos, int yPos, float width, float height){
     Player p;
@@ -52,25 +53,27 @@ void changeAnimation(Player* p, Animation a, int* index){
     *index = 0;
 }
 
-bool checkCollisionsWithEnemies(Player p, Enemy* enemies, int enemiesLength){
-    for(int i=0; i<enemiesLength; i++){
-        if(CheckCollisionRecs(p.hitbox, enemies[i].hitbox)){
+bool checkCollisionsWithEnemies(Player p, DynamicArray* enemies){
+    for(int i=0; i<enemies->size; i++){
+        Enemy* e = (Enemy*) da_get(enemies, i);
+        if(CheckCollisionRecs(p.hitbox, e->hitbox)){
             return true;
         }
     }
     return false;
 }
 
-Enemy* hitEnemy(Player p, Enemy* enemies, int enemiesLength){
-    for(int i=0; i<enemiesLength; i++){
-        if(CheckCollisionRecs(p.attackHitbox, enemies[i].hitbox)){
-            return &enemies[i];
+Enemy* hitEnemy(Player p, DynamicArray* enemies){
+    for(int i=0; i<enemies->size; i++){
+        Enemy* e = (Enemy*) da_get(enemies, i);
+        if(CheckCollisionRecs(p.attackHitbox, e->hitbox)){
+            return e;
         }
     }
     return NULL;
 }
 
-void movePlayer(Player* p, Animation* animations, Vector2 unitVector, int numKeysHeldDown, Enemy* enemies, int enemiesLength){
+void movePlayer(Player* p, Animation* animations, Vector2 unitVector, int numKeysHeldDown, DynamicArray* enemies){
     int speed;
     if(numKeysHeldDown >= 2){
         speed = PLAYER_SPEED - PLAYER_SPEED/4;
@@ -87,7 +90,7 @@ void movePlayer(Player* p, Animation* animations, Vector2 unitVector, int numKey
     updatePlayerHitbox(&tempPlayer);
 
     // Only move if no collision at the new position
-    if(!checkCollisionsWithEnemies(tempPlayer, enemies, enemiesLength)){
+    if(!checkCollisionsWithEnemies(tempPlayer, enemies)){
         p->transform2D.position = newPosition;
     }
 
@@ -103,14 +106,14 @@ void updateNumKeysHeldDown(int* numKeysHeldDown){
     *numKeysHeldDown += 1;
 }
 
-void updatePlayer(Player* p, Animation* animations, int* index, Enemy* enemies, int enemiesLength){
+void updatePlayer(Player* p, Animation* animations, int* index, DynamicArray* enemies){
     if(p->attackTimer > 0.0f)
         p->attackTimer -= GetFrameTime();
     if(IsKeyPressed(KEY_SPACE) && p->attackTimer <= 0.0f){
         p->attackTimer = ATTACK_DELAY;
         changeAnimation(p, animations[ATTACK1_ANIMATION], index);
 
-        Enemy* hit = hitEnemy(*p, enemies, enemiesLength);
+        Enemy* hit = hitEnemy(*p, enemies);
         if(hit != NULL){
             hit->hp -= 1;
         }
@@ -138,7 +141,7 @@ void updatePlayer(Player* p, Animation* animations, int* index, Enemy* enemies, 
                 p->sprite.source.width = -p->sprite.source.width;
                 p->sprite.flipH = false;
             }
-            movePlayer(p, animations, (Vector2){1,0}, numKeysHeldDown, enemies, enemiesLength);
+            movePlayer(p, animations, (Vector2){1,0}, numKeysHeldDown, enemies);
         }
         else
             if(p->sprite.animation.id != IDLE_ANIMATION)
@@ -153,7 +156,7 @@ void updatePlayer(Player* p, Animation* animations, int* index, Enemy* enemies, 
                 p->sprite.source.width = -p->sprite.source.width;
                 p->sprite.flipH = true;
             }
-            movePlayer(p, animations, (Vector2){-1,0}, numKeysHeldDown, enemies, enemiesLength);
+            movePlayer(p, animations, (Vector2){-1,0}, numKeysHeldDown, enemies);
         }
         else
             if(p->sprite.animation.id != IDLE_ANIMATION)
@@ -164,7 +167,7 @@ void updatePlayer(Player* p, Animation* animations, int* index, Enemy* enemies, 
             if(p->sprite.animation.id != RUN_ANIMATION){
                 changeAnimation(p, animations[RUN_ANIMATION], index);
             }
-            movePlayer(p, animations, (Vector2){0,-1}, numKeysHeldDown, enemies, enemiesLength);
+            movePlayer(p, animations, (Vector2){0,-1}, numKeysHeldDown, enemies);
         }
         else
             if(p->sprite.animation.id != IDLE_ANIMATION)
@@ -175,7 +178,7 @@ void updatePlayer(Player* p, Animation* animations, int* index, Enemy* enemies, 
             if(p->sprite.animation.id != RUN_ANIMATION){
                 changeAnimation(p, animations[RUN_ANIMATION], index);
             }
-            movePlayer(p, animations, (Vector2){0,1}, numKeysHeldDown, enemies, enemiesLength);
+            movePlayer(p, animations, (Vector2){0,1}, numKeysHeldDown, enemies);
         }
         else
             if(p->sprite.animation.id != IDLE_ANIMATION)

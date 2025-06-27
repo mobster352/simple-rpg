@@ -10,6 +10,7 @@
 #include "enemy.h"
 #include "sprite.h"
 #include "constants.h"
+#include "dynamic_array.h"
 
 void* concatVector2ToString(const char *string, Vector2 value){
 	char buffer[32];
@@ -35,10 +36,25 @@ void drawTextWithVector2(char *text, Vector2 value, int posX, int posY, int font
 	free(newText);
 }
 
-void cleanupEnemies(Enemy* enemies, int enemiesLength){
-	for(int i=0; i<enemiesLength; i++){
-        if(enemies[i].hp <= 0){
-            //remove enemy from list
+void updateEnemies(DynamicArray* enemies){
+	for(int i=0; i<enemies->size; i++){
+		Enemy* e = (Enemy*) da_get(enemies, i);
+        updateEnemy(e);
+    }
+}
+
+void drawEnemies(DynamicArray* enemies, bool debug){
+	for(int i=0; i<enemies->size; i++){
+		Enemy* e = (Enemy*) da_get(enemies, i);
+        drawEnemy(*e, debug);
+    }
+}
+
+void cleanupEnemies(DynamicArray* enemies){
+	for(int i=0; i<enemies->size; i++){
+		Enemy* e = (Enemy*) da_get(enemies, i);
+        if(e->hp <= 0){
+			da_remove(enemies, i);
         }
     }
 }
@@ -63,12 +79,6 @@ int main ()
 	Animation playerAttack1Animation = createAnimation(ATTACK1_ANIMATION, playerAttack1Texture, 4, 192, 1.2f, false);
 
 	Animation playerAnimations[5] = {
-		playerIdleAnimation,
-		playerRunAnimation,
-		playerAttack1Animation
-	};
-
-	Animation enemyAnimations[5] = {
 		playerIdleAnimation,
 		playerRunAnimation,
 		playerAttack1Animation
@@ -108,9 +118,8 @@ int main ()
 	);
 	changeEnemySprite(&e, playerSprite);
 
-	Enemy* enemies[1] = {
-		&e
-	};
+	DynamicArray* enemies = da_create(sizeof(Enemy), 1);
+	da_push(enemies, &e);
 
 	Camera2D playerCamera;
 	playerCamera.target = player.transform2D.position;
@@ -131,9 +140,14 @@ int main ()
 		float cameraY = (player.transform2D.position.y-GetScreenHeight()/2) + player.transform2D.height/2;
 		playerCamera.target = (Vector2){cameraX, cameraY};  
 
-		cleanupEnemies(*enemies, 1);
-		updateEnemy(&e);
-		updatePlayer(&player, playerAnimations, &index, *enemies, 1);
+		if(IsKeyPressed(KEY_F2)){
+			e.transform2D.position = GetMousePosition();
+			da_push(enemies, &e);
+		}
+
+		cleanupEnemies(enemies);
+		updateEnemies(enemies);
+		updatePlayer(&player, playerAnimations, &index, enemies);
 		
 		// drawing
 		BeginDrawing();
@@ -145,7 +159,7 @@ int main ()
 		// drawTextWithVector2("Pos: ", GetMousePosition(), playerCamera.target.x + GetScreenWidth() - 170, playerCamera.target.y + GetScreenHeight() - 20, 20, WHITE); //this is for follow camera logic
 		drawTextWithVector2("Pos: ", GetMousePosition(), GetScreenWidth() - 170, GetScreenHeight() - 20, 20, WHITE);
 		
-		drawEnemy(e, debug);
+		drawEnemies(enemies, debug);
 
 		PlayAnimation(&player.sprite, playerAnimations, &index, &animationTimer);
 		drawPlayerHitbox(player, &debug);

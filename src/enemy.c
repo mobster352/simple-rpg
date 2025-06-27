@@ -44,7 +44,7 @@ void drawEnemyHitbox(Enemy e, bool debug){
     }
 }
 
-void moveEnemny(Enemy* e){
+void moveEnemy(Enemy* e){
     // e->transform2D.position = Vector2Subtract(e->transform2D.position, (Vector2){10, 10});
     e->sprite.dest = (Rectangle){
         e->transform2D.position.x-100, 
@@ -54,9 +54,10 @@ void moveEnemny(Enemy* e){
     };
 }
 
-void updateEnemy(Enemy* e){
-    moveEnemny(e);
+Enemy* updateEnemy(Enemy* e){
+    moveEnemy(e);
     updateEnemyHitbox(e);
+    return e;
 }
 
 void drawEnemy(Enemy e, bool debug){

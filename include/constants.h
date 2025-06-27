@@ -13,5 +13,4 @@ enum ANIMATION {
     GUARD_ANIMATION
 };
 
-
 #endif

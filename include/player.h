@@ -4,6 +4,7 @@
 #include "transform2D.h"
 #include "sprite.h"
 #include "enemy.h"
+#include "dynamic_array.h"
 
 typedef struct player {
     Transform2D transform2D;
@@ -17,6 +18,6 @@ Player createPlayer(int xPos, int yPos, float width, float height);
 void changeSprite(Player* p, Sprite s);
 void drawPlayerHitbox(Player p, bool* debug);
 void changeAnimation(Player* p, Animation a, int* index);
-void updatePlayer(Player* p, Animation* animations, int* index, Enemy* enemies, int enemiesLength);
+void updatePlayer(Player* p, Animation* animations, int* index, DynamicArray* enemies);
 
 #endif

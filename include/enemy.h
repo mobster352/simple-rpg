@@ -13,7 +13,7 @@ typedef struct enemy {
 
 Enemy createEnemy(int xPos, int yPos, float width, float height);
 void changeEnemySprite(Enemy* e, Sprite s);
-void updateEnemy(Enemy* e);
+Enemy* updateEnemy(Enemy* e);
 void drawEnemy(Enemy e, bool debug);
 
 #endif
