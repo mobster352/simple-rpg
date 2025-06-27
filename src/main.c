@@ -110,7 +110,7 @@ int main ()
 		drawTextWithVector2("Pos: ", GetMousePosition(), playerCamera.target.x + GetScreenWidth() - 170, playerCamera.target.y + GetScreenHeight() - 20, 20, WHITE);
 		
 		PlayAnimation(&player.sprite, playerAnimations, &index, &animationTimer);
-		Rectangle hitbox = drawPlayerHitbox(player, &debug);
+		drawPlayerHitbox(player, &debug);
 		
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
 		EndMode2D();

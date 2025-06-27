@@ -18,18 +18,32 @@ void changeSprite(Player* p, Sprite s){
     p->sprite = s;
 }
 
-Rectangle drawPlayerHitbox(Player p, bool* debug){
+void updatePlayerHitbox(Player* p){
     Rectangle hitbox = {
-        p.transform2D.position.x+70/p.sprite.animation.divisor, 
-        p.transform2D.position.y+50/p.sprite.animation.divisor, 
-        p.transform2D.width/4, 
-        p.transform2D.height/2.5f
+        p->transform2D.position.x+70/p->sprite.animation.divisor, 
+        p->transform2D.position.y+50/p->sprite.animation.divisor, 
+        p->transform2D.width/4, 
+        p->transform2D.height/2.5f
     };
+    p->hitbox = hitbox;
+    Rectangle attackHitbox = {
+        p->transform2D.position.x+120/p->sprite.animation.divisor, 
+        p->transform2D.position.y+60/p->sprite.animation.divisor, 
+        p->transform2D.width/5.0f, 
+        p->transform2D.height/3.2f
+    };
+    p->attackHitbox = attackHitbox;
+    if(p->sprite.flipH)
+        p->attackHitbox.x -= 90/p->sprite.animation.divisor;
+}
+
+void drawPlayerHitbox(Player p, bool* debug){
     if(IsKeyPressed(KEY_F1))
         *debug = !*debug;
-    if(*debug)
-        DrawRectangleLines(hitbox.x, hitbox.y, hitbox.width, hitbox.height, RED);
-    return hitbox;
+    if(*debug){
+        DrawRectangleLines(p.hitbox.x, p.hitbox.y, p.hitbox.width, p.hitbox.height, RED);
+        DrawRectangleLines(p.attackHitbox.x, p.attackHitbox.y, p.attackHitbox.width, p.attackHitbox.height, RED);
+    }
 }
 
 void changeAnimation(Player* p, Animation a, int* index){
@@ -131,7 +145,7 @@ void updatePlayer(Player* p, Animation* animations, int* index){
             if(p->sprite.animation.id != IDLE_ANIMATION)
                 changeAnimation(p, animations[IDLE_ANIMATION], index);
     }
-
+    updatePlayerHitbox(p);
     if((IsKeyReleased(KEY_D) || IsKeyReleased(KEY_A) || IsKeyReleased(KEY_W) || IsKeyReleased(KEY_S)) && p->sprite.animation.id != IDLE_ANIMATION){
         changeAnimation(p, animations[IDLE_ANIMATION], index);
     }
