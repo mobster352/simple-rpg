@@ -4,13 +4,29 @@
 #include "constants.h"
 #include "stdio.h"
 
-Enemy createEnemy(int xPos, int yPos, float width, float height){
+Enemy createEnemy(int xPos, int yPos, float width, float height, Animation idleAnimation){
     Enemy e;
     e.transform2D.position.x = xPos;
     e.transform2D.position.y = yPos;
     e.transform2D.width = width;
     e.transform2D.height = height;
     e.hp = 1;
+
+    Sprite enemySprite = createSprite(
+		idleAnimation,
+		(Rectangle){0,0,192,192},
+		(Rectangle){
+			e.transform2D.position.x, 
+			e.transform2D.position.y, 
+			idleAnimation.size/idleAnimation.divisor, 
+			idleAnimation.size/idleAnimation.divisor, 
+		},
+		Vector2Zero(),
+		0.0f,
+		WHITE
+	);
+	changeEnemySprite(&e, enemySprite);
+
     return e;
 }
 

@@ -13,4 +13,8 @@ enum ANIMATION {
     GUARD_ANIMATION
 };
 
+enum MAPS {
+    START_MAP
+};
+
 #endif

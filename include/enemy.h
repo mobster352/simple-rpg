@@ -11,7 +11,7 @@ typedef struct enemy {
     int hp;
 } Enemy;
 
-Enemy createEnemy(int xPos, int yPos, float width, float height);
+Enemy createEnemy(int xPos, int yPos, float width, float height, Animation idleAnimation);
 void changeEnemySprite(Enemy* e, Sprite s);
 Enemy* updateEnemy(Enemy* e);
 void drawEnemy(Enemy e, bool debug);

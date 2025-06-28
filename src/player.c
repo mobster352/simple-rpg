@@ -6,13 +6,29 @@
 #include "enemy.h"
 #include "dynamic_array.h"
 
-Player createPlayer(int xPos, int yPos, float width, float height){
+Player createPlayer(int xPos, int yPos, float width, float height, Animation idleAnimation){
     Player p;
     p.transform2D.position.x = xPos;
     p.transform2D.position.y = yPos;
     p.transform2D.width = width;
     p.transform2D.height = height;
     p.attackTimer = 0.0f;
+
+    Sprite playerSprite = createSprite(
+		idleAnimation,
+		(Rectangle){0,0,192,192},
+		(Rectangle){
+			p.transform2D.position.x, 
+			p.transform2D.position.y, 
+			idleAnimation.size/idleAnimation.divisor, 
+			idleAnimation.size/idleAnimation.divisor, 
+		},
+		Vector2Zero(),
+		0.0f,
+		WHITE
+	);
+	changeSprite(&p, playerSprite);
+
     return p;
 }
 

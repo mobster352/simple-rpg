@@ -12,6 +12,7 @@
 		"*.c": "c",
 		"resource_dir.h": "c",
 		"*.m": "c",
-		"dynamic_array.h": "c"
+		"dynamic_array.h": "c",
+		"map": "c"
 	}
 }

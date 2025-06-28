@@ -11,6 +11,7 @@
 #include "sprite.h"
 #include "constants.h"
 #include "dynamic_array.h"
+#include "map.h"
 
 void* concatVector2ToString(const char *string, Vector2 value){
 	char buffer[32];
@@ -69,14 +70,18 @@ int main ()
 	SearchAndSetResourceDir("resources");
 
 	Texture background = LoadTexture("Water_Background_color.png");
-	Texture map = LoadTexture("map.png");
-	Texture playerIdleTexture = LoadTexture("Warrior_Idle.png");
-	Texture playerRunTexture = LoadTexture("Warrior_Run.png");
-	Texture playerAttack1Texture = LoadTexture("Warrior_Attack1.png");
+
+	Texture playerIdleTexture = LoadTexture("units/blue/warrior/Warrior_Idle.png");
+	Texture playerRunTexture = LoadTexture("units/blue/warrior/Warrior_Run.png");
+	Texture playerAttack1Texture = LoadTexture("units/blue/warrior/Warrior_Attack1.png");
+
+	Texture enemyIdleTexture = LoadTexture("units/red/warrior/Warrior_Idle.png");
 
 	Animation playerIdleAnimation = createAnimation(IDLE_ANIMATION, playerIdleTexture, 8, 192, 1.2f, true);
 	Animation playerRunAnimation = createAnimation(RUN_ANIMATION, playerRunTexture, 6, 192, 1.2f, true);
 	Animation playerAttack1Animation = createAnimation(ATTACK1_ANIMATION, playerAttack1Texture, 4, 192, 1.2f, false);
+
+	Animation enemyIdleAnimation = createAnimation(IDLE_ANIMATION, enemyIdleTexture, 8, 192, 1.2f, true);
 
 	Animation playerAnimations[5] = {
 		playerIdleAnimation,
@@ -85,38 +90,13 @@ int main ()
 	};
 
 	SetTargetFPS(60);
+
+	Map* maps = initMaps();
+	int currentMap = START_MAP;
 	
-	Player player = createPlayer(100,100,192,192);
-	Sprite playerSprite = createSprite(
-		playerIdleAnimation,
-		(Rectangle){0,0,192,192},
-		(Rectangle){
-			player.transform2D.position.x, 
-			player.transform2D.position.y, 
-			playerIdleAnimation.size/playerIdleAnimation.divisor, 
-			playerIdleAnimation.size/playerIdleAnimation.divisor, 
-		},
-		Vector2Zero(),
-		0.0f,
-		WHITE
-	);
-	changeSprite(&player, playerSprite);
+	Player player = createPlayer(100, 100, 192, 192, playerIdleAnimation);
 	
-	Enemy e = createEnemy(400, 400, 192, 192);
-	Sprite enemySprite = createSprite(
-		playerIdleAnimation,
-		(Rectangle){0,0,192,192},
-		(Rectangle){
-			e.transform2D.position.x, 
-			e.transform2D.position.y, 
-			playerIdleAnimation.size/playerIdleAnimation.divisor, 
-			playerIdleAnimation.size/playerIdleAnimation.divisor, 
-		},
-		Vector2Zero(),
-		0.0f,
-		WHITE
-	);
-	changeEnemySprite(&e, playerSprite);
+	Enemy e = createEnemy(400, 400, 192, 192, enemyIdleAnimation);
 
 	DynamicArray* enemies = da_create(sizeof(Enemy), 1);
 	da_push(enemies, &e);
@@ -155,7 +135,9 @@ int main ()
 		// Setup the back buffer for drawing (clear color and depth buffers)
 		ClearBackground(BLACK);
 		DrawTexturePro(background,(Rectangle){0,0, GetScreenWidth(), GetScreenHeight()},(Rectangle){0,0, GetScreenWidth(), GetScreenHeight()},Vector2Zero(),0.0f,WHITE);
-		DrawTexture(map,0,0,WHITE);
+		
+		DrawMap(maps, currentMap, debug);
+		
 		// drawTextWithVector2("Pos: ", GetMousePosition(), playerCamera.target.x + GetScreenWidth() - 170, playerCamera.target.y + GetScreenHeight() - 20, 20, WHITE); //this is for follow camera logic
 		drawTextWithVector2("Pos: ", GetMousePosition(), GetScreenWidth() - 170, GetScreenHeight() - 20, 20, WHITE);
 		
@@ -164,6 +146,7 @@ int main ()
 		PlayAnimation(&player.sprite, playerAnimations, &index, &animationTimer);
 		drawPlayerHitbox(player, &debug);
 		
+		DrawFPS(GetScreenWidth()-40, 20);
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
 		// EndMode2D();
 		EndDrawing();
@@ -172,10 +155,12 @@ int main ()
 	// cleanup
 	// unload our texture so it can be cleaned up
 	UnloadTexture(background);
-	UnloadTexture(map);
 	UnloadTexture(playerIdleTexture);
 	UnloadTexture(playerRunTexture);
 	UnloadTexture(playerAttack1Texture);
+	UnloadTexture(enemyIdleTexture);
+
+	unloadMaps(maps);
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();

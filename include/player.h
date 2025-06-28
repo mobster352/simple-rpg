@@ -14,7 +14,7 @@ typedef struct player {
     Rectangle attackHitbox;
 } Player;
 
-Player createPlayer(int xPos, int yPos, float width, float height);
+Player createPlayer(int xPos, int yPos, float width, float height, Animation idleAnimation);
 void changeSprite(Player* p, Sprite s);
 void drawPlayerHitbox(Player p, bool* debug);
 void changeAnimation(Player* p, Animation a, int* index);
