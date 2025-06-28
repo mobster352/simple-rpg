@@ -205,3 +205,7 @@ void updatePlayer(Player* p, Animation* animations, int* index, DynamicArray* en
         changeAnimation(p, animations[IDLE_ANIMATION], index);
     }
 }
+
+void drawPlayer(Player* p, Animation* playerAnimations){
+    PlayAnimation(&p->sprite, playerAnimations);   
+}

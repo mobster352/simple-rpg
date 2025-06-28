@@ -10,6 +10,8 @@ typedef struct animation {
     int size;
     float divisor;
     bool loop;
+    float timer; //animaation timer
+    int index; //index of the animation
 } Animation;
 
 typedef struct sprite {
@@ -25,6 +27,6 @@ typedef struct sprite {
 Animation createAnimation(int id, Texture texture, int steps, int size, float divisor, bool loop);
 Sprite createSprite(Animation animation, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint);
 void updateAnimation(Sprite* s, Animation animation);
-void PlayAnimation(Sprite* sprite, Animation* animations, int* index, float* animationTimer);
+void PlayAnimation(Sprite* sprite, Animation* animations);
 
 #endif

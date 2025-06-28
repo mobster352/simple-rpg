@@ -44,10 +44,10 @@ void updateEnemies(DynamicArray* enemies){
     }
 }
 
-void drawEnemies(DynamicArray* enemies, bool debug){
+void drawEnemies(DynamicArray* enemies, Animation* animations, bool debug){
 	for(int i=0; i<enemies->size; i++){
 		Enemy* e = (Enemy*) da_get(enemies, i);
-        drawEnemy(*e, debug);
+        drawEnemy(e, animations, debug);
     }
 }
 
@@ -87,6 +87,10 @@ int main ()
 		playerIdleAnimation,
 		playerRunAnimation,
 		playerAttack1Animation
+	};
+
+	Animation enemyAnimations[5] = {
+		enemyIdleAnimation
 	};
 
 	SetTargetFPS(60);
@@ -141,9 +145,9 @@ int main ()
 		// drawTextWithVector2("Pos: ", GetMousePosition(), playerCamera.target.x + GetScreenWidth() - 170, playerCamera.target.y + GetScreenHeight() - 20, 20, WHITE); //this is for follow camera logic
 		drawTextWithVector2("Pos: ", GetMousePosition(), GetScreenWidth() - 170, GetScreenHeight() - 20, 20, WHITE);
 		
-		drawEnemies(enemies, debug);
+		drawEnemies(enemies, enemyAnimations, debug);
 
-		PlayAnimation(&player.sprite, playerAnimations, &index, &animationTimer);
+		drawPlayer(&player, playerAnimations);
 		drawPlayerHitbox(player, &debug);
 		
 		DrawFPS(GetScreenWidth()-40, 20);

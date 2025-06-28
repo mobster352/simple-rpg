@@ -76,7 +76,8 @@ Enemy* updateEnemy(Enemy* e){
     return e;
 }
 
-void drawEnemy(Enemy e, bool debug){
-    DrawTexturePro(e.sprite.animation.texture, e.sprite.source, e.sprite.dest, e.sprite.origin, e.sprite.rotation, e.sprite.tint);
-    drawEnemyHitbox(e, debug);
+void drawEnemy(Enemy* e, Animation* animations, bool debug){
+    // DrawTexturePro(e.sprite.animation.texture, e.sprite.source, e.sprite.dest, e.sprite.origin, e.sprite.rotation, e.sprite.tint);
+    PlayAnimation(&e->sprite, animations);
+    drawEnemyHitbox(*e, debug);
 }

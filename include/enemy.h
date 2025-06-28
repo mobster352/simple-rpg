@@ -14,6 +14,6 @@ typedef struct enemy {
 Enemy createEnemy(int xPos, int yPos, float width, float height, Animation idleAnimation);
 void changeEnemySprite(Enemy* e, Sprite s);
 Enemy* updateEnemy(Enemy* e);
-void drawEnemy(Enemy e, bool debug);
+void drawEnemy(Enemy* e, Animation* animations, bool debug);
 
 #endif
