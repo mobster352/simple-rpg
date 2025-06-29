@@ -8,6 +8,7 @@ typedef struct enemy {
     Transform2D transform2D;
     Sprite sprite;
     Rectangle hitbox;
+    Rectangle attackHitbox;
     int hp;
 } Enemy;
 

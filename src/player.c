@@ -206,6 +206,7 @@ void updatePlayer(Player* p, Animation* animations, int* index, DynamicArray* en
     }
 }
 
-void drawPlayer(Player* p, Animation* playerAnimations){
+void drawPlayer(Player* p, Animation* playerAnimations, bool* debug){
     PlayAnimation(&p->sprite, playerAnimations);   
+    drawPlayerHitbox(*p, debug);
 }

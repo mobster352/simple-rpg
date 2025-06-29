@@ -42,21 +42,21 @@ void updateEnemyHitbox(Enemy* e){
         e->transform2D.height/2.5f
     };
     e->hitbox = hitbox;
-    // Rectangle attackHitbox = {
-    //     e->transform2D.position.x+120/e->sprite.animation.divisor, 
-    //     e->transform2D.position.y+60/e->sprite.animation.divisor, 
-    //     e->transform2D.width/5.0f, 
-    //     e->transform2D.height/3.2f
-    // };
-    // e->attackHitbox = attackHitbox;
-    // if(e->sprite.flipH)
-    //     e->attackHitbox.x -= 90/e->sprite.animation.divisor;
+    Rectangle attackHitbox = {
+        e->transform2D.position.x-2/e->sprite.animation.divisor, 
+        e->transform2D.position.y-60/e->sprite.animation.divisor, 
+        e->transform2D.width/5.0f, 
+        e->transform2D.height/3.2f
+    };
+    e->attackHitbox = attackHitbox;
+    if(e->sprite.flipH)
+        e->attackHitbox.x -= 90/e->sprite.animation.divisor;
 }
 
 void drawEnemyHitbox(Enemy e, bool debug){
     if(debug){
         DrawRectangleLines(e.hitbox.x, e.hitbox.y, e.hitbox.width, e.hitbox.height, RED);
-        // DrawRectangleLines(p.attackHitbox.x, p.attackHitbox.y, p.attackHitbox.width, p.attackHitbox.height, RED);
+        DrawRectangleLines(e.attackHitbox.x, e.attackHitbox.y, e.attackHitbox.width, e.attackHitbox.height, RED);
     }
 }
 

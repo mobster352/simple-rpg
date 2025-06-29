@@ -147,8 +147,7 @@ int main ()
 		
 		drawEnemies(enemies, enemyAnimations, debug);
 
-		drawPlayer(&player, playerAnimations);
-		drawPlayerHitbox(player, &debug);
+		drawPlayer(&player, playerAnimations, &debug);
 		
 		DrawFPS(GetScreenWidth()-40, 20);
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
