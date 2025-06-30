@@ -4,7 +4,7 @@
 #include "constants.h"
 #include "stdio.h"
 
-Enemy createEnemy(int xPos, int yPos, float width, float height, Animation idleAnimation){
+Enemy createEnemy(int xPos, int yPos, float width, float height, Animation idleAnimation, EnemyPath path){
     Enemy e;
     e.transform2D.position.x = xPos;
     e.transform2D.position.y = yPos;
@@ -26,6 +26,7 @@ Enemy createEnemy(int xPos, int yPos, float width, float height, Animation idleA
 		WHITE
 	);
 	changeEnemySprite(&e, enemySprite);
+    e.path = path;
 
     return e;
 }
@@ -61,13 +62,39 @@ void drawEnemyHitbox(Enemy e, bool debug){
 }
 
 void moveEnemy(Enemy* e){
-    // e->transform2D.position = Vector2Subtract(e->transform2D.position, (Vector2){10, 10});
-    e->sprite.dest = (Rectangle){
-        e->transform2D.position.x-100, 
-        e->transform2D.position.y-100, 
-        e->sprite.animation.size/e->sprite.animation.divisor, 
-        e->sprite.animation.size/e->sprite.animation.divisor
-    };
+    if(!e->path.isMoving){
+        if(e->path.waitTime <= 0.0f){
+            if(e->path.pointIndex >= e->path.pointCount)
+                e->path.pointIndex = 0;
+            Vector2 point = e->path.points[e->path.pointIndex];
+            Vector2 nextPos = Vector2Add(e->transform2D.position, point);
+            e->transform2D.position = Vector2MoveTowards(e->transform2D.position,  nextPos, ENEMY_SPEED * GetFrameTime());
+            e->sprite.dest = (Rectangle){
+                e->transform2D.position.x-100, 
+                e->transform2D.position.y-100, 
+                e->sprite.animation.size/e->sprite.animation.divisor, 
+                e->sprite.animation.size/e->sprite.animation.divisor
+            };
+            e->path.pointIndex += 1;
+            e->path.movingToPoint = nextPos;
+        }
+        e->path.waitTime += GetFrameTime();
+        if (e->path.waitTime >= 3.0f){
+                e->path.waitTime = 0.0f;
+                e->path.isMoving = true;
+        }
+    }
+    else{
+        e->transform2D.position = Vector2MoveTowards(e->transform2D.position,  e->path.movingToPoint, ENEMY_SPEED * GetFrameTime());
+        e->sprite.dest = (Rectangle){
+            e->transform2D.position.x-100, 
+            e->transform2D.position.y-100, 
+            e->sprite.animation.size/e->sprite.animation.divisor, 
+            e->sprite.animation.size/e->sprite.animation.divisor
+        };
+        if(Vector2Distance(e->transform2D.position, e->path.movingToPoint) <= 0.1f)
+            e->path.isMoving = false;
+    }
 }
 
 Enemy* updateEnemy(Enemy* e){

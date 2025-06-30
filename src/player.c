@@ -64,9 +64,9 @@ void drawPlayerHitbox(Player p, bool* debug){
     }
 }
 
-void changeAnimation(Player* p, Animation a, int* index){
+void changeAnimation(Player* p, Animation a){
     p->sprite.animation = a;
-    *index = 0;
+    p->sprite.animation.index = 0;
 }
 
 bool checkCollisionsWithEnemies(Player p, DynamicArray* enemies){
@@ -122,12 +122,12 @@ void updateNumKeysHeldDown(int* numKeysHeldDown){
     *numKeysHeldDown += 1;
 }
 
-void updatePlayer(Player* p, Animation* animations, int* index, DynamicArray* enemies){
+void updatePlayer(Player* p, Animation* animations, DynamicArray* enemies){
     if(p->attackTimer > 0.0f)
         p->attackTimer -= GetFrameTime();
     if(IsKeyPressed(KEY_SPACE) && p->attackTimer <= 0.0f){
         p->attackTimer = ATTACK_DELAY;
-        changeAnimation(p, animations[ATTACK1_ANIMATION], index);
+        changeAnimation(p, animations[ATTACK1_ANIMATION]);
 
         Enemy* hit = hitEnemy(*p, enemies);
         if(hit != NULL){
@@ -151,7 +151,7 @@ void updatePlayer(Player* p, Animation* animations, int* index, DynamicArray* en
     if(IsKeyDown(KEY_D)){
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_A)){
             if(p->sprite.animation.id != RUN_ANIMATION){
-                changeAnimation(p, animations[RUN_ANIMATION], index);
+                changeAnimation(p, animations[RUN_ANIMATION]);
             }
             if(p->sprite.flipH){
                 p->sprite.source.width = -p->sprite.source.width;
@@ -161,12 +161,12 @@ void updatePlayer(Player* p, Animation* animations, int* index, DynamicArray* en
         }
         else
             if(p->sprite.animation.id != IDLE_ANIMATION)
-                changeAnimation(p, animations[IDLE_ANIMATION], index);
+                changeAnimation(p, animations[IDLE_ANIMATION]);
     }
     if(IsKeyDown(KEY_A)){
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_D)){
             if(p->sprite.animation.id != RUN_ANIMATION){
-                changeAnimation(p, animations[RUN_ANIMATION], index);
+                changeAnimation(p, animations[RUN_ANIMATION]);
             }
             if(!p->sprite.flipH){
                 p->sprite.source.width = -p->sprite.source.width;
@@ -176,33 +176,33 @@ void updatePlayer(Player* p, Animation* animations, int* index, DynamicArray* en
         }
         else
             if(p->sprite.animation.id != IDLE_ANIMATION)
-                changeAnimation(p, animations[IDLE_ANIMATION], index);
+                changeAnimation(p, animations[IDLE_ANIMATION]);
     }
     if(IsKeyDown(KEY_W)){
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_S)){
             if(p->sprite.animation.id != RUN_ANIMATION){
-                changeAnimation(p, animations[RUN_ANIMATION], index);
+                changeAnimation(p, animations[RUN_ANIMATION]);
             }
             movePlayer(p, animations, (Vector2){0,-1}, numKeysHeldDown, enemies);
         }
         else
             if(p->sprite.animation.id != IDLE_ANIMATION)
-                changeAnimation(p, animations[IDLE_ANIMATION], index);
+                changeAnimation(p, animations[IDLE_ANIMATION]);
     }
     if(IsKeyDown(KEY_S)){
         if(numKeysHeldDown <= 2 && !IsKeyDown(KEY_W)){
             if(p->sprite.animation.id != RUN_ANIMATION){
-                changeAnimation(p, animations[RUN_ANIMATION], index);
+                changeAnimation(p, animations[RUN_ANIMATION]);
             }
             movePlayer(p, animations, (Vector2){0,1}, numKeysHeldDown, enemies);
         }
         else
             if(p->sprite.animation.id != IDLE_ANIMATION)
-                changeAnimation(p, animations[IDLE_ANIMATION], index);
+                changeAnimation(p, animations[IDLE_ANIMATION]);
     }
     updatePlayerHitbox(p);
     if((IsKeyReleased(KEY_D) || IsKeyReleased(KEY_A) || IsKeyReleased(KEY_W) || IsKeyReleased(KEY_S)) && p->sprite.animation.id != IDLE_ANIMATION){
-        changeAnimation(p, animations[IDLE_ANIMATION], index);
+        changeAnimation(p, animations[IDLE_ANIMATION]);
     }
 }
 

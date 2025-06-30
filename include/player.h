@@ -16,8 +16,8 @@ typedef struct player {
 
 Player createPlayer(int xPos, int yPos, float width, float height, Animation idleAnimation);
 void changeSprite(Player* p, Sprite s);
-void changeAnimation(Player* p, Animation a, int* index);
-void updatePlayer(Player* p, Animation* animations, int* index, DynamicArray* enemies);
+void changeAnimation(Player* p, Animation a);
+void updatePlayer(Player* p, Animation* animations, DynamicArray* enemies);
 void drawPlayer(Player* p, Animation* playerAnimations, bool* debug);
 
 #endif

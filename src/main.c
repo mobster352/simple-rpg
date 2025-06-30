@@ -100,7 +100,22 @@ int main ()
 	
 	Player player = createPlayer(100, 100, 192, 192, playerIdleAnimation);
 	
-	Enemy e = createEnemy(400, 400, 192, 192, enemyIdleAnimation);
+	Vector2 points[4] = {
+		{100,0},
+		{0,100},
+		{-100,0},
+		{0,-100}
+	};
+
+	EnemyPath path = {
+		points,
+		4,
+		0,
+		0.0f,
+		{0,0},
+		false
+	};
+	Enemy e = createEnemy(400, 400, 192, 192, enemyIdleAnimation, path);
 
 	DynamicArray* enemies = da_create(sizeof(Enemy), 1);
 	da_push(enemies, &e);
@@ -110,10 +125,6 @@ int main ()
 	playerCamera.zoom = 1.0f;
 	playerCamera.rotation = 0.0f;
 	playerCamera.offset = Vector2Zero();
-
-	int index = 0;
-	float animationTimer = 0.0f;
-	float animationSpeed = 0.1f;
 
 	bool debug = false;
 
@@ -131,7 +142,7 @@ int main ()
 
 		cleanupEnemies(enemies);
 		updateEnemies(enemies);
-		updatePlayer(&player, playerAnimations, &index, enemies);
+		updatePlayer(&player, playerAnimations, enemies);
 		
 		// drawing
 		BeginDrawing();
